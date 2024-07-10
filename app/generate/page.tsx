@@ -111,6 +111,75 @@
 //         console.error("Error downloading image:", error);
 //         setError("Failed to download the image. Please try again.");
 //       });
+
+//     const handleGenerate = async () => {
+//       if (!prompt) {
+//         setError("Please enter a prompt before generating an image.");
+//         return;
+//       }
+
+//       setIsGenerating(true);
+//       setError(null);
+
+//       const controller = new AbortController();
+//       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds timeout
+
+//       try {
+//         const response = await fetch("/api/generate-image", {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ prompt, model: selectedModel }),
+//           signal: controller.signal,
+//         });
+
+//         clearTimeout(timeoutId);
+
+//         let data;
+//         const textResponse = await response.text();
+//         try {
+//           data = JSON.parse(textResponse);
+//         } catch (parseError) {
+//           console.error("Failed to parse JSON response:", textResponse);
+//           throw new Error(
+//             `Invalid JSON response: ${textResponse.slice(0, 100)}...`
+//           );
+//         }
+
+//         if (!response.ok) {
+//           throw new Error(
+//             data.error || `HTTP error! status: ${response.status}`
+//           );
+//         }
+
+//         if (!data.imageUrl) {
+//           throw new Error("No image URL in the response");
+//         }
+
+//         const newHistoryItem: HistoryItem = {
+//           id: Date.now().toString(),
+//           prompt: prompt,
+//           imageUrl: data.imageUrl,
+//           timestamp: new Date(),
+//         };
+//         setHistory((prevHistory) => [newHistoryItem, ...prevHistory]);
+//         setPrompt(""); // Clear the prompt after successful generation
+//       } catch (error) {
+//         console.error("Error generating image:", error);
+//         if (error instanceof Error) {
+//           if (error.name === "AbortError") {
+//             setError(
+//               "Request timed out. The server might be busy. Please try again later."
+//             );
+//           } else {
+//             setError(error.message);
+//           }
+//         } else {
+//           setError("An unexpected error occurred. Please try again.");
+//         }
+//       } finally {
+//         setIsGenerating(false);
+//       }
+//     };
 //   };
 
 //   return (
@@ -178,7 +247,7 @@
 //           {" "}
 //           {/* Increased max-width */}
 //           <h2 className="text-white text-2xl font-bold mb-4">
-//             Generated Images
+//             Your Generated Images 👇
 //           </h2>
 //           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 //             {" "}
@@ -284,11 +353,21 @@ const ImageGenerationInterface: React.FC = () => {
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        let errorMessage: string;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage =
+            errorJson.error || `HTTP error! status: ${response.status}`;
+        } catch (parseError) {
+          console.error("Failed to parse error response:", errorText);
+          errorMessage = `HTTP error! status: ${response.status}. Response: ${errorText}`;
+        }
+        throw new Error(errorMessage);
       }
+
+      const data = await response.json();
 
       if (!data.imageUrl) {
         throw new Error("No image URL in the response");
@@ -335,75 +414,6 @@ const ImageGenerationInterface: React.FC = () => {
         console.error("Error downloading image:", error);
         setError("Failed to download the image. Please try again.");
       });
-
-    const handleGenerate = async () => {
-      if (!prompt) {
-        setError("Please enter a prompt before generating an image.");
-        return;
-      }
-
-      setIsGenerating(true);
-      setError(null);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds timeout
-
-      try {
-        const response = await fetch("/api/generate-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, model: selectedModel }),
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        let data;
-        const textResponse = await response.text();
-        try {
-          data = JSON.parse(textResponse);
-        } catch (parseError) {
-          console.error("Failed to parse JSON response:", textResponse);
-          throw new Error(
-            `Invalid JSON response: ${textResponse.slice(0, 100)}...`
-          );
-        }
-
-        if (!response.ok) {
-          throw new Error(
-            data.error || `HTTP error! status: ${response.status}`
-          );
-        }
-
-        if (!data.imageUrl) {
-          throw new Error("No image URL in the response");
-        }
-
-        const newHistoryItem: HistoryItem = {
-          id: Date.now().toString(),
-          prompt: prompt,
-          imageUrl: data.imageUrl,
-          timestamp: new Date(),
-        };
-        setHistory((prevHistory) => [newHistoryItem, ...prevHistory]);
-        setPrompt(""); // Clear the prompt after successful generation
-      } catch (error) {
-        console.error("Error generating image:", error);
-        if (error instanceof Error) {
-          if (error.name === "AbortError") {
-            setError(
-              "Request timed out. The server might be busy. Please try again later."
-            );
-          } else {
-            setError(error.message);
-          }
-        } else {
-          setError("An unexpected error occurred. Please try again.");
-        }
-      } finally {
-        setIsGenerating(false);
-      }
-    };
   };
 
   return (
@@ -468,14 +478,10 @@ const ImageGenerationInterface: React.FC = () => {
 
         {/* History Section */}
         <div className="max-w-6xl mx-auto">
-          {" "}
-          {/* Increased max-width */}
           <h2 className="text-white text-2xl font-bold mb-4">
             Your Generated Images 👇
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {" "}
-            {/* Adjusted grid and gap */}
             {history.map((item, idx) => (
               <BlurFade key={item.id} delay={0.25 + idx * 0.05}>
                 <div className="relative group bg-gray-800 rounded-lg overflow-hidden">
@@ -492,7 +498,7 @@ const ImageGenerationInterface: React.FC = () => {
                       }
                       className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-150 ease-in-out"
                     >
-                      <DownloadIcon size={24} /> {/* Increased icon size */}
+                      <DownloadIcon size={24} />
                     </button>
                   </div>
                   <div className="p-4">
