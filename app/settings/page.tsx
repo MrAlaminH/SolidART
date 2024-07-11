@@ -232,7 +232,7 @@ const ProfileComponent: React.FC = () => {
   const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
-    username: "alamin",
+    username: "Your Name",
     name: "",
     bio: "",
     location: "",
