@@ -1,59 +1,69 @@
-// import React from "react";
-// import AppNavbar from "@/components/AppNavbar";
-
-// const page = () => {
-//   return (
-//     <>
-//       <AppNavbar />
-//       <div className="w-full max-w-4xl">
-//         <h2 className="text-white text-2xl font-bold mb-4 text-center py-8">
-//           Loved Images
-//         </h2>
-//         {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-//         {history.map((item) => (
-//           <div key={item.id} className="bg-gray-800 rounded-lg overflow-hidden">
-//             <img
-//               src={item.imageUrl}
-//               alt={item.prompt}
-//               className="w-full h-48 object-cover"
-//             />
-//             <div className="p-4">
-//               <p className="text-white text-sm truncate">{item.prompt}</p>
-//               <p className="text-gray-400 text-xs mt-1">
-//                 {item.timestamp.toLocaleString()}
-//               </p>
-//             </div>
-//           </div>
-//         ))}
-//       </div> */}
-//       </div>
-//     </>
-//   );
-// };
-
-// export default page;
-
 "use client";
 import React, { useState, useEffect } from "react";
-import { HeartIcon, DownloadIcon } from "lucide-react";
-import BlurFade from "@/components/magicui/blur-fade";
+import { HeartIcon, DownloadIcon, CopyIcon, CheckIcon } from "lucide-react";
 import AppNavbar from "@/components/AppNavbar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
-  getLovedImages,
-  removeLovedImage,
-  LovedImage,
-} from "@/utils/lovedImages";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const LovedPage: React.FC = () => {
-  const [lovedImages, setLovedImages] = useState<LovedImage[]>([]);
+interface Image {
+  ipfsHash: string;
+  url: string;
+  prompt: string;
+  timestamp: string;
+}
+
+const LovedImages: React.FC = () => {
+  const [lovedImages, setLovedImages] = useState<Image[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
   useEffect(() => {
-    setLovedImages(getLovedImages());
+    const fetchLovedImages = () => {
+      try {
+        setLoading(true);
+        const lovedImageHashes = JSON.parse(
+          localStorage.getItem("lovedImages") || "[]"
+        );
+        const allImages = JSON.parse(localStorage.getItem("allImages") || "[]");
+        const loved = allImages.filter((img: Image) =>
+          lovedImageHashes.includes(img.ipfsHash)
+        );
+        setLovedImages(loved);
+      } catch (err: any) {
+        setError(`Failed to fetch loved images: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLovedImages();
+
+    // Set up an event listener for storage changes
+    window.addEventListener("storage", fetchLovedImages);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("storage", fetchLovedImages);
+    };
   }, []);
 
-  const handleUnlove = (id: number) => {
-    removeLovedImage(id);
-    setLovedImages((prevImages) => prevImages.filter((img) => img.id !== id));
+  const handleUnlove = (ipfsHash: string) => {
+    const updatedLovedImages = lovedImages.filter(
+      (img) => img.ipfsHash !== ipfsHash
+    );
+    setLovedImages(updatedLovedImages);
+
+    // Update localStorage
+    const lovedImageHashes = updatedLovedImages.map((img) => img.ipfsHash);
+    localStorage.setItem("lovedImages", JSON.stringify(lovedImageHashes));
   };
 
   const handleDownload = async (url: string, filename: string) => {
@@ -73,46 +83,141 @@ const LovedPage: React.FC = () => {
     }
   };
 
+  const handleCopyPrompt = (prompt: string) => {
+    navigator.clipboard.writeText(prompt);
+    setCopiedPrompt(prompt);
+    setTimeout(() => setCopiedPrompt(null), 2000);
+  };
+
+  const ImageSkeleton = () => (
+    <Card className="bg-gray-800 text-white overflow-hidden">
+      <Skeleton className="w-full aspect-square bg-gray-700" />
+      <CardContent className="p-4">
+        <Skeleton className="h-6 w-3/4 bg-gray-700 mb-2" />
+        <Skeleton className="h-4 w-1/2 bg-gray-700" />
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <section id="loved-photos">
+    <section id="loved-photos" className="bg-gray-900 min-h-screen">
       <AppNavbar />
-      <div className="py-6">
-        <h1 className="text-white text-2xl font-bold mb-6 text-center">
+      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-white text-3xl font-bold mb-8 text-center">
           Your Loved Images
         </h1>
-        <div className="columns-2 gap-4 sm:columns-3 px-4">
-          {lovedImages.map((image, idx) => (
-            <BlurFade key={image.id} delay={0.25 + idx * 0.05} inView>
-              <div className="relative mb-4 group">
-                <img
-                  className="w-full rounded-lg object-contain"
-                  src={image.url}
-                  alt={`Loved image ${image.id}`}
-                  loading="lazy"
-                />
-                <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleUnlove(image.id)}
-                    className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors duration-300"
-                  >
-                    <HeartIcon size={20} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleDownload(image.url, `loved-image-${image.id}.jpg`)
-                    }
-                    className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-300"
-                  >
-                    <DownloadIcon size={20} />
-                  </button>
-                </div>
+        {error ? (
+          <div className="flex justify-center items-center h-64 text-red-500">
+            Error: {error}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {loading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <ImageSkeleton key={index} />
+              ))
+            ) : lovedImages.length === 0 ? (
+              <div className="col-span-full text-center text-white text-xl">
+                You havent loved any images yet.
               </div>
-            </BlurFade>
-          ))}
-        </div>
+            ) : (
+              lovedImages.map((image) => (
+                <Card
+                  key={image.ipfsHash}
+                  className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="relative aspect-square">
+                    <img
+                      src={image.url}
+                      alt={image.prompt}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute top-2 right-2 flex space-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              onClick={() => handleUnlove(image.ipfsHash)}
+                              className="rounded-full bg-blue-500 text-white"
+                            >
+                              <HeartIcon size={20} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Remove from Loved</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              onClick={() =>
+                                handleDownload(
+                                  image.url,
+                                  `image-${image.ipfsHash}.jpg`
+                                )
+                              }
+                              className="rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300"
+                            >
+                              <DownloadIcon size={20} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Download</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-lg font-semibold truncate flex-grow mr-2">
+                        {image.prompt}
+                      </h2>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCopyPrompt(image.prompt)}
+                              className="shrink-0"
+                            >
+                              {copiedPrompt === image.prompt ? (
+                                <CheckIcon size={16} />
+                              ) : (
+                                <CopyIcon size={16} />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {copiedPrompt === image.prompt
+                                ? "Copied!"
+                                : "Copy prompt"}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      {new Date(image.timestamp).toLocaleString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-export default LovedPage;
+export default LovedImages;

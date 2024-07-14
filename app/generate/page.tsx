@@ -126,6 +126,12 @@ const ImageGenerationInterface: React.FC = () => {
       });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleGenerate();
+    }
+  };
+
   return (
     <div className="bg-gray-900 min-h-screen">
       <AppNavbar />
@@ -145,6 +151,7 @@ const ImageGenerationInterface: React.FC = () => {
               placeholder="Enter your image prompt"
               value={prompt}
               onChange={handlePromptChange}
+              onKeyDown={handleKeyDown}
               disabled={isGenerating}
               className="w-full bg-gray-700 text-white rounded-full py-2 sm:py-3 pl-10 sm:pl-12 pr-10 sm:pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base disabled:opacity-50"
             />

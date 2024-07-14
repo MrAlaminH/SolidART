@@ -1,150 +1,86 @@
-// // app/explore/page.tsx
-// "use client";
-// import { Heart, Download } from "lucide-react";
-// import AppNavbar from "@/components/AppNavbar";
-
-// const images = [
-//   {
-//     src: "https://images.unsplash.com/photo-1574774191469-3d7732e5fc8b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDN8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 1",
-//   },
-//   {
-//     src: "https://images.unsplash.com/photo-1420745981456-b95fe23f5753?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDR8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 2",
-//   },
-//   {
-//     src: "https://images.unsplash.com/photo-1574774191469-3d7732e5fc8b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDN8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 3",
-//   },
-//   {
-//     src: "https://images.unsplash.com/photo-1578645635737-6a88e706e0f1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDJ8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 4",
-//   },
-//   {
-//     src: "https://images.unsplash.com/photo-1420745981456-b95fe23f5753?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDR8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 5",
-//   },
-//   {
-//     src: "https://images.unsplash.com/photo-1574774191469-3d7732e5fc8b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDN8fHxlbnwwfHx8fHw%3D",
-//     alt: "Random Image 6",
-//   },
-// ];
-
-// const explore = () => {
-//   return (
-//     <div className="text-white text-2xl font-bold mb-4 text-center ">
-//       <AppNavbar />
-//       <h1 className="py-4">All the trending generated images</h1>
-//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-//         {images.map((image, index) => (
-//           <div key={index} className="relative group">
-//             <img
-//               src={image.src}
-//               alt={image.alt}
-//               className="w-full h-auto rounded-lg"
-//             />
-//             <div className="absolute top-0 right-0 p-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-//               <button className="focus:outline-none">
-//                 <Heart className="w-6 h-6 text-white" />
-//               </button>
-//               <button className="focus:outline-none">
-//                 <Download className="w-6 h-6 text-white" />
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default explore;
-
-// import BlurFade from "@/components/magicui/blur-fade";
-// import AppNavbar from "@/components/AppNavbar";
-
-// console.log(BlurFade); // Should log the component function or class
-
-// const images = Array.from({ length: 20 }, (_, i) => {
-//   const isLandscape = i % 2 === 0;
-//   const width = isLandscape ? 800 : 600;
-//   const height = isLandscape ? 600 : 800;
-//   return `https://picsum.photos/seed/${i + 1}/${width}/${height}`;
-// });
-
-// const explore = () => {
-//   return (
-//     <section id="photos">
-//       <AppNavbar />
-//       <div className="py-6">
-//         <h1 className="text-white text-2xl font-bold mb-6 text-center">
-//           All the trending generated images
-//         </h1>
-//         <div className="columns-2 gap-4 sm:columns-3 px-4">
-//           {images.map((imageUrl, idx) => (
-//             <BlurFade key={imageUrl} delay={0.25 + idx * 0.05} inView>
-//               <img
-//                 className="mb-4 size-full rounded-lg object-contain"
-//                 src={imageUrl}
-//                 alt={`Random stock image ${idx + 1}`}
-//               />
-//             </BlurFade>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// export default explore;
-
 "use client";
-import React, { useState } from "react";
-import { HeartIcon, DownloadIcon } from "lucide-react";
-import BlurFade from "@/components/magicui/blur-fade";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { HeartIcon, DownloadIcon, CopyIcon, CheckIcon } from "lucide-react";
 import AppNavbar from "@/components/AppNavbar";
-import { saveLovedImage, removeLovedImage } from "@/utils/lovedImages";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Image {
-  id: number;
+  ipfsHash: string;
   url: string;
-  isLoved: boolean;
+  prompt: string;
+  timestamp: string;
 }
 
-const ExplorePage: React.FC = () => {
-  const [images, setImages] = useState<Image[]>(
-    Array.from({ length: 20 }, (_, i) => ({
-      id: i + 1,
-      url: `https://picsum.photos/seed/${i + 1}/${i % 2 === 0 ? 800 : 600}/${
-        i % 2 === 0 ? 600 : 800
-      }`,
-      isLoved: false,
-    }))
-  );
+const Explore: React.FC = () => {
+  const [images, setImages] = useState<Image[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lovedImages, setLovedImages] = useState<string[]>([]);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
-  const handleLove = (id: number) => {
-    setImages((prevImages) =>
-      prevImages.map((img) => {
-        if (img.id === id) {
-          const newIsLoved = !img.isLoved;
-          if (newIsLoved) {
-            saveLovedImage(
-              img.id.toString(), // Convert id to string if necessary
-              img.url,
-              {
-                id: img.id,
-                url: img.url,
-                timestamp: new Date().toISOString(),
-              }
-            );
-          } else {
-            removeLovedImage(img.id);
-          }
-          return { ...img, isLoved: newIsLoved };
-        }
-        return img;
-      })
-    );
+  const fetchImages = async (pageNum: number, pageLimit: number = 10) => {
+    try {
+      setLoading(true);
+      const response = await axios.get<{
+        images: Image[];
+        hasMore: boolean;
+        totalCount: number;
+      }>(`/api/fetchImageHistory?page=${pageNum}&limit=${pageLimit}`);
+      setImages((prevImages) =>
+        pageNum === 1
+          ? response.data.images
+          : [...prevImages, ...response.data.images]
+      );
+      setHasMore(response.data.hasMore);
+      setTotalCount(response.data.totalCount);
+      setPage(pageNum);
+    } catch (err: any) {
+      setError(
+        `Failed to fetch image history: ${
+          err.response?.data?.error || err.message
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchImages(1);
+  }, []);
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchImages(page + 1);
+    }
+  };
+
+  const handleLove = (image: Image) => {
+    const lovedImages = JSON.parse(localStorage.getItem("lovedImages") || "[]");
+    const isLoved = lovedImages.includes(image.ipfsHash);
+    const updatedLovedImages = isLoved
+      ? lovedImages.filter((hash: string) => hash !== image.ipfsHash)
+      : [...lovedImages, image.ipfsHash];
+    localStorage.setItem("lovedImages", JSON.stringify(updatedLovedImages));
+    setLovedImages(updatedLovedImages);
+
+    const allImages = JSON.parse(localStorage.getItem("allImages") || "[]");
+    if (!allImages.some((img: Image) => img.ipfsHash === image.ipfsHash)) {
+      allImages.push(image);
+      localStorage.setItem("allImages", JSON.stringify(allImages));
+    }
   };
 
   const handleDownload = async (url: string, filename: string) => {
@@ -164,48 +100,155 @@ const ExplorePage: React.FC = () => {
     }
   };
 
+  const handleCopyPrompt = (prompt: string) => {
+    navigator.clipboard.writeText(prompt);
+    setCopiedPrompt(prompt);
+    setTimeout(() => setCopiedPrompt(null), 2000);
+  };
+
+  const ImageSkeleton = () => (
+    <Card className="bg-gray-800 text-white overflow-hidden">
+      <Skeleton className="w-full aspect-square bg-gray-700" />
+      <CardContent className="p-4">
+        <Skeleton className="h-6 w-3/4 bg-gray-700 mb-2" />
+        <Skeleton className="h-4 w-1/2 bg-gray-700" />
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <section id="photos">
+    <section id="photos" className="bg-gray-900 min-h-screen">
       <AppNavbar />
-      <div className="py-6">
-        <h1 className="text-white text-2xl font-bold mb-6 text-center">
-          All the trending generated images
+      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-white text-3xl font-bold mb-8 text-center">
+          Your Generated Image History
         </h1>
-        <div className="columns-2 gap-4 sm:columns-3 px-4">
-          {images.map((image, idx) => (
-            <BlurFade key={image.id} delay={0.25 + idx * 0.05} inView>
-              <div className="relative mb-4 group">
-                <img
-                  className="w-full rounded-lg object-contain"
-                  src={image.url}
-                  alt={`Random stock image ${image.id}`}
-                  loading="lazy"
-                />
-                <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleLove(image.id)}
-                    className={`p-2 rounded-full ${
-                      image.isLoved ? "bg-red-500" : "bg-white"
-                    } text-gray-800  transition-colors duration-300`}
-                  >
-                    <HeartIcon size={20} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleDownload(image.url, `image-${image.id}.jpg`)
-                    }
-                    className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-300"
-                  >
-                    <DownloadIcon size={20} />
-                  </button>
-                </div>
+        {error ? (
+          <div className="flex justify-center items-center h-64 text-red-500">
+            Error: {error}
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {loading && images.length === 0
+                ? Array.from({ length: 8 }).map((_, index) => (
+                    <ImageSkeleton key={index} />
+                  ))
+                : images.map((image) => (
+                    <Card
+                      key={image.ipfsHash}
+                      className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                    >
+                      <div className="relative aspect-square">
+                        <img
+                          src={image.url}
+                          alt={image.prompt}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute top-2 right-2 flex space-x-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="secondary"
+                                  size="icon"
+                                  onClick={() => handleLove(image)}
+                                  className={`rounded-full ${
+                                    lovedImages.includes(image.ipfsHash)
+                                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                                      : "bg-gray-200 text-gray-800 hover:text-white"
+                                  }`}
+                                >
+                                  <HeartIcon size={20} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>
+                                  {lovedImages.includes(image.ipfsHash)
+                                    ? "Unlike"
+                                    : "Like"}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="secondary"
+                                  size="icon"
+                                  onClick={() =>
+                                    handleDownload(
+                                      image.url,
+                                      `image-${image.ipfsHash}.jpg`
+                                    )
+                                  }
+                                  className="rounded-full bg-gray-200 text-gray-800 hover:bg-blue-500"
+                                >
+                                  <DownloadIcon size={20} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Download</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h2 className="text-lg font-semibold truncate flex-grow mr-2">
+                            {image.prompt}
+                          </h2>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleCopyPrompt(image.prompt)}
+                                  className="shrink-0"
+                                >
+                                  {copiedPrompt === image.prompt ? (
+                                    <CheckIcon size={16} />
+                                  ) : (
+                                    <CopyIcon size={16} />
+                                  )}
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>
+                                  {copiedPrompt === image.prompt
+                                    ? "Copied!"
+                                    : "Copy prompt"}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <p className="text-sm text-gray-400">
+                          {new Date(image.timestamp).toLocaleString()}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+            </div>
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button onClick={loadMore} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </Button>
               </div>
-            </BlurFade>
-          ))}
-        </div>
+            )}
+            <div className="text-center text-white mt-4">
+              Showing {images.length} of {totalCount} images
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
 };
 
-export default ExplorePage;
+export default Explore;
