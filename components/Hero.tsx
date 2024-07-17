@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
@@ -23,9 +24,9 @@ const ShuffleHero = () => {
             unleash your creativity like never before, generating stunning
             visuals with just a few clicks.
           </p>
-          <button className="bg-indigo-500 text-white font-medium py-2 px-4 rounded transition-all hover:bg-indigo-600 active:scale-95">
-            <a href="/explore">Open The APP</a>
-          </button>
+          <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-full">
+            <a href="/explore">Try it out</a>
+          </Button>
         </BlurFade>
       </div>
       <ShuffleGrid />
