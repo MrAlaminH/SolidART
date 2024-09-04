@@ -1,4 +1,4 @@
-#SolidArt
+# SolidArt-The Next Gen AI Image generation Platform 
 
 Welcome to the SolidArt repository! SolidArt is an innovative platform that leverages artificial intelligence to turn your creative prompts into stunning visual art. Built with Next.js, this application integrates cutting-edge technologies to deliver a seamless and engaging user experience.
 
