@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react"; // Updated import
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
@@ -31,6 +32,11 @@ const Navbar = () => {
   if (status === "loading" || !session) {
     return null;
   }
+
+  const handleSignOut = async () => {
+    // Use the signOut function from next-auth/react
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
     <>
@@ -95,7 +101,7 @@ const Navbar = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <button
-                      onClick={() => signOut()}
+                      onClick={handleSignOut}
                       className="flex items-center w-full text-left"
                     >
                       <LogOut className="w-5 h-5 mr-2" /> Logout
@@ -147,7 +153,7 @@ const Navbar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <button
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className="flex items-center w-full text-left"
                 >
                   <LogOut className="w-5 h-5 mr-2" /> Logout

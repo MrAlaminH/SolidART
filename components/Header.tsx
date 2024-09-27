@@ -70,13 +70,13 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <button
-                onClick={() => signIn("google", { callbackUrl: "/explore" })}
+              <a
+                href="/auth/signin"
                 className="flex items-center space-x-2 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               >
                 <User className="h-5 w-5" />
                 <span>Sign in</span>
-              </button>
+              </a>
             )}
           </div>
           <div className="-mr-2 flex md:hidden">
@@ -130,22 +130,6 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {session ? (
               <>
-                {/* <div className="flex items-center space-x-2 py-2">
-                  {session.user?.image ? (
-                    <img
-                      src={session.user.image}
-                      alt="User"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <User className="h-8 w-8 text-gray-300" />
-                  )}
-                  <span className="text-gray-300">
-                    {session.user?.name || "User"}
-                  </span>
-                </div> */}
                 <Link
                   href="/explore"
                   className=" text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center"
@@ -169,13 +153,13 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <button
-                onClick={() => signIn("google", { callbackUrl: "/explore" })}
-                className="text-gray-300 hover:bg-gray-700 hover:text-white  px-3 py-2 rounded-md text-base font-medium flex items-center w-full "
+              <a
+                href="/auth/signin"
+                className="flex items-center space-x-2 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               >
                 <User className="h-5 w-5" />
                 <span>Sign in</span>
-              </button>
+              </a>
             )}
             <ModeToggle />
           </div>

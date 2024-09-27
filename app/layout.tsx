@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SessionProvider } from "next-auth/react";
+import { NextAuthProvider } from "@/components/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
+        <NextAuthProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -29,7 +29,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
-        </SessionProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

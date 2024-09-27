@@ -24,9 +24,6 @@ const ShuffleHero = () => {
             unleash your creativity like never before, generating stunning
             visuals with just a few clicks.
           </p>
-          <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-full">
-            <a href="/explore">Try it out</a>
-          </Button>
         </BlurFade>
       </div>
       <ShuffleGrid />

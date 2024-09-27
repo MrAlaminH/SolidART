@@ -1,211 +1,22 @@
-// "use client";
-// import { auth } from "@/auth";
-// import React, { useState, useEffect } from "react";
-// import { Camera, X } from "lucide-react";
-// import AppNavbar from "@/components/AppNavbar";
-
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
-// import { Textarea } from "@/components/ui/textarea";
-// import { Button } from "@/components/ui/button";
-
-// interface ProfileData {
-//   username: string;
-//   name: string;
-//   bio: string;
-//   location: string;
-//   followers: number;
-//   following: number;
-//   likesReceived: number;
-//   joinDate: string;
-// }
-
-// const ProfileComponent: React.FC = () => {
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [profileData, setProfileData] = useState<ProfileData>({
-//     username: "alamin",
-//     name: "",
-//     bio: "",
-//     location: "",
-//     followers: 0,
-//     following: 3,
-//     likesReceived: 6,
-//     joinDate: "August 2023",
-//   });
-
-//   useEffect(() => {
-//     fetchProfileData();
-//   }, []);
-
-//   const fetchProfileData = async () => {
-//     try {
-//       const response = await fetch("http://localhost:5000/api/profile");
-//       const data = await response.json();
-//       setProfileData(data);
-//     } catch (error) {
-//       console.error("Error fetching profile data:", error);
-//     }
-//   };
-
-//   const handleEditProfile = () => {
-//     setIsEditing(true);
-//   };
-
-//   const handleSaveChanges = async () => {
-//     try {
-//       await fetch("http://localhost:5000/api/profile", {
-//         method: "PUT",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(profileData),
-//       });
-//       setIsEditing(false);
-//     } catch (error) {
-//       console.error("Error saving profile data:", error);
-//     }
-//   };
-
-//   const handleInputChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setProfileData((prevData) => ({ ...prevData, [name]: value }));
-//   };
-
-//   return (
-//     <>
-//       <AppNavbar />
-//       <div className=" text-white p-4 max-w-md mx-auto md:max-w-2xl lg:max-w-4xl">
-//         <div className="flex flex-col md:flex-row items-center justify-between mb-4">
-//           <div className="flex items-center space-x-4">
-//             <div className="relative">
-//               {/* <img
-//                 src="https://images.unsplash.com/photo-1720188228786-e6cb3b668aef?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
-//                 alt="Profile"
-//                 className="w-20 h-20 rounded-full"
-//               /> */}
-//               <img src={session.user.image} alt="User Avatar" />
-//               <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full">
-//                 <Camera size={16} />
-//               </button>
-//             </div>
-//             <div>
-//               <h2 className="text-xl font-bold">{profileData.username}</h2>
-//               <button className="text-sm text-gray-400">+ Add name</button>
-//             </div>
-//           </div>
-//           <Dialog open={isEditing} onOpenChange={setIsEditing}>
-//             <DialogTrigger asChild>
-//               <button
-//                 onClick={handleEditProfile}
-//                 className="px-4 py-2 bg-gray-800 rounded-full text-sm"
-//               >
-//                 Edit profile
-//               </button>
-//             </DialogTrigger>
-//             <DialogContent className="bg-gray-900 text-white">
-//               <DialogHeader>
-//                 <DialogTitle>Edit profile</DialogTitle>
-//               </DialogHeader>
-//               <div className="space-y-4">
-//                 <div>
-//                   <label
-//                     htmlFor="username"
-//                     className="block text-sm font-medium mb-1"
-//                   >
-//                     Username
-//                   </label>
-//                   <Input
-//                     id="username"
-//                     name="username"
-//                     value={profileData.username}
-//                     onChange={handleInputChange}
-//                     className="bg-gray-800 border-gray-700"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="name"
-//                     className="block text-sm font-medium mb-1"
-//                   >
-//                     Name (optional)
-//                   </label>
-//                   <Input
-//                     id="name"
-//                     name="name"
-//                     value={profileData.name}
-//                     onChange={handleInputChange}
-//                     className="bg-gray-800 border-gray-700"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="location"
-//                     className="block text-sm font-medium mb-1"
-//                   >
-//                     Location (optional)
-//                   </label>
-//                   <Input
-//                     id="location"
-//                     name="location"
-//                     value={profileData.location}
-//                     onChange={handleInputChange}
-//                     className="bg-gray-800 border-gray-700"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="bio"
-//                     className="block text-sm font-medium mb-1"
-//                   >
-//                     Bio (optional)
-//                   </label>
-//                   <Textarea
-//                     id="bio"
-//                     name="bio"
-//                     value={profileData.bio}
-//                     onChange={handleInputChange}
-//                     className="bg-gray-800 border-gray-700"
-//                     rows={3}
-//                   />
-//                 </div>
-//               </div>
-//               <Button onClick={handleSaveChanges} className="mt-4 w-full">
-//                 Save changes
-//               </Button>
-//             </DialogContent>
-//           </Dialog>
-//         </div>
-//         {/* <div className="flex space-x-4 mb-4">
-//         <span>{profileData.followers} follower</span>
-//         <span>{profileData.following} following</span>
-//         <span>{profileData.likesReceived} likes received</span>
-//       </div> */}
-//         <button className="text-sm text-gray-400 mb-4">+ Add bio</button>
-//         <div className="flex items-center text-sm text-gray-400 mb-4">
-//           <span className="mr-2">📅</span>
-//           <span>Joined {profileData.joinDate}</span>
-//         </div>
-//         <button className="text-sm text-gray-400">+ Add location</button>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default ProfileComponent;
-
 "use client";
+
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { Camera } from "lucide-react";
-import AppNavbar from "@/components/AppNavbar";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -213,189 +24,265 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import AppNavbar from "@/components/AppNavbar";
+import Spinner from "@/components/ui/spinner"; // Assuming you have a spinner component
+import { MapPinIcon, UserIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 
-interface ProfileData {
-  username: string;
-  name: string;
-  bio: string;
-  location: string;
-  followers: number;
-  following: number;
-  likesReceived: number;
-  joinDate: string;
-}
+const formSchema = z.object({
+  name: z.string().min(2).max(100),
+  bio: z.string().max(160).optional(),
+  location: z.string().max(100).optional(),
+});
 
-const ProfileComponent: React.FC = () => {
-  const { data: session } = useSession();
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    username: "Your Name",
-    name: "",
-    bio: "",
-    location: "",
-    followers: 0,
-    following: 3,
-    likesReceived: 6,
-    joinDate: "August 2023",
+type FormData = z.infer<typeof formSchema>;
+
+const ProfilePage: React.FC = () => {
+  const { data: session, status } = useSession();
+  const [profileData, setProfileData] = useState<FormData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [currentData, setCurrentData] = useState<FormData | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false); // New state for edit dialog visibility
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: profileData?.name || "", // Update to use fetched profile data
+      bio: profileData?.bio || "",
+      location: profileData?.location || "",
+    },
   });
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    if (status === "loading") return;
+    if (!session) return;
 
-  const fetchProfileData = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/profile");
-      const data = await response.json();
-      setProfileData(data);
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    }
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/profile");
+        if (response.ok) {
+          const data = await response.json();
+          setProfileData(data);
+          form.reset(data);
+        } else {
+          throw new Error("Failed to fetch profile data");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [form, session, status]);
+
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
+    setCurrentData(data); // Ensure currentData includes all fields
+    setShowConfirm(true);
   };
 
-  const handleEditProfile = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveChanges = async () => {
+  const handleConfirmSubmit = async () => {
+    setShowConfirm(false); // Close the confirmation dialog
     try {
-      await fetch("http://localhost:5000/api/profile", {
+      const response = await fetch("/api/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(currentData), // Ensure currentData has all necessary fields
       });
-      setIsEditing(false);
+
+      if (response.ok) {
+        const updatedProfile = await response.json(); // Get the updated profile data
+        setProfileData(updatedProfile); // Update the profileData state with the new data
+        form.reset(updatedProfile); // Reset the form with the updated profile data
+        toast({
+          title: "Success",
+          description: "Your profile has been updated.",
+        });
+        setShowEditDialog(false); // Close the edit dialog after successful save
+      } else {
+        throw new Error("Failed to update profile");
+      }
     } catch (error) {
-      console.error("Error saving profile data:", error);
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setProfileData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const ProfileSkeleton = () => (
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader className="flex flex-row justify-between items-start">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="w-20 h-20 rounded-full" />
+          <div>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-24 mt-2" />
+          </div>
+        </div>
+        <Skeleton className="h-10 w-24" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex space-x-4">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (status === "loading" || isLoading) {
+    return <ProfileSkeleton />;
+  }
+
+  if (!session) {
+    return <div>You need to be authenticated to view this page.</div>;
+  }
 
   return (
     <>
       <AppNavbar />
-      <div className="text-white p-4 max-w-md mx-auto md:max-w-2xl lg:max-w-4xl">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+      <Card className="w-full max-w-4xl mx-auto mt-12">
+        <CardHeader className="flex flex-row justify-between items-start">
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              {session?.user?.image && (
-                <img
-                  src={session.user.image}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full"
-                />
-              )}
-              <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full">
-                <Camera size={16} />
-              </button>
-            </div>
+            {session.user?.image ? (
+              <img
+                src={session.user.image}
+                alt="Profile"
+                className="w-20 h-20 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+                <UserIcon size={40} className="text-gray-400" />
+              </div>
+            )}
             <div>
-              <h2 className="text-xl font-bold">{profileData.username}</h2>
-              <button className="text-sm text-gray-400">+ Add name</button>
+              <h2 className="text-2xl font-bold">
+                {profileData?.name || "Add name"}
+              </h2>
+              <p className="text-sm text-gray-500">
+                @
+                {profileData?.name?.toLowerCase().replace(/\s+/g, "") ||
+                  "username"}
+              </p>
             </div>
           </div>
-          <Dialog open={isEditing} onOpenChange={setIsEditing}>
+          <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
             <DialogTrigger asChild>
-              <button
-                onClick={handleEditProfile}
-                className="px-4 py-2 bg-gray-800 rounded-full text-sm"
-              >
+              <Button onClick={() => setShowEditDialog(true)}>
                 Edit profile
-              </button>
+              </Button>
             </DialogTrigger>
-            <DialogContent className="bg-gray-900 text-white">
+            <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Edit profile</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Username
-                  </label>
-                  <Input
-                    id="username"
-                    name="username"
-                    value={profileData.username}
-                    onChange={handleInputChange}
-                    className="bg-gray-800 border-gray-700"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Name (optional)
-                  </label>
-                  <Input
-                    id="name"
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={form.control}
                     name="name"
-                    value={profileData.name}
-                    onChange={handleInputChange}
-                    className="bg-gray-800 border-gray-700"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div>
-                  <label
-                    htmlFor="location"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Location (optional)
-                  </label>
-                  <Input
-                    id="location"
-                    name="location"
-                    value={profileData.location}
-                    onChange={handleInputChange}
-                    className="bg-gray-800 border-gray-700"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="bio"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Bio (optional)
-                  </label>
-                  <Textarea
-                    id="bio"
+                  <FormField
+                    control={form.control}
                     name="bio"
-                    value={profileData.bio}
-                    onChange={handleInputChange}
-                    className="bg-gray-800 border-gray-700"
-                    rows={3}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Tell us about yourself"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>Max 160 characters.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-              </div>
-              <Button onClick={handleSaveChanges} className="mt-4 w-full">
-                Save changes
-              </Button>
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your location" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Spinner /> : "Save Changes"}
+                  </Button>
+                </form>
+              </Form>
             </DialogContent>
           </Dialog>
-        </div>
-        <button className="text-sm text-gray-400 mb-4">+ Add bio</button>
-        <div className="flex items-center text-sm text-gray-400 mb-4">
-          <span className="mr-2">📅</span>
-          <span>Joined {profileData.joinDate}</span>
-        </div>
-        <button className="text-sm text-gray-400">+ Add location</button>
-      </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm">{profileData?.bio || "Add bio"}</p>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <MapPinIcon size={16} />
+              <span>{profileData?.location || "Add location"}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Changes</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to save these changes?</p>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowConfirm(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSubmit}>Confirm</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
 
-export default ProfileComponent;
+export default ProfilePage;
