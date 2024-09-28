@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { HeartIcon, DownloadIcon, CopyIcon, CheckIcon } from "lucide-react";
 import AppNavbar from "@/components/AppNavbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Import the existing Skeleton component
+import ImagePopup from "@/components/ImagePopup"; // Import the new ImagePopup component
+import { CheckIcon, CopyIcon, DownloadIcon, HeartIcon } from "lucide-react";
+import Image from "next/image"; // Import the Image component from next/image
 
 interface Image {
   ipfsHash: string;
@@ -19,6 +21,17 @@ interface Image {
   prompt: string;
   timestamp: string;
 }
+
+// Define the ImageSkeleton component
+const ImageSkeleton = () => (
+  <Card className="bg-gray-800 text-white overflow-hidden">
+    <Skeleton className="w-full aspect-square bg-gray-700" />
+    <CardContent className="p-4">
+      <Skeleton className="h-6 w-3/4 bg-gray-700 mb-2" />
+      <Skeleton className="h-4 w-1/2 bg-gray-700" />
+    </CardContent>
+  </Card>
+);
 
 const Explore: React.FC = () => {
   const [images, setImages] = useState<Image[]>([]);
@@ -29,6 +42,7 @@ const Explore: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State for the selected image
 
   const fetchImages = async (pageNum: number, pageLimit: number = 10) => {
     try {
@@ -106,15 +120,13 @@ const Explore: React.FC = () => {
     setTimeout(() => setCopiedPrompt(null), 2000);
   };
 
-  const ImageSkeleton = () => (
-    <Card className="bg-gray-800 text-white overflow-hidden">
-      <Skeleton className="w-full aspect-square bg-gray-700" />
-      <CardContent className="p-4">
-        <Skeleton className="h-6 w-3/4 bg-gray-700 mb-2" />
-        <Skeleton className="h-4 w-1/2 bg-gray-700" />
-      </CardContent>
-    </Card>
-  );
+  const handleImageClick = (url: string) => {
+    setSelectedImage(url); // Set the selected image to show in the popup
+  };
+
+  const closePopup = () => {
+    setSelectedImage(null); // Close the popup
+  };
 
   return (
     <section id="photos" className="bg-gray-900 min-h-screen">
@@ -132,18 +144,20 @@ const Explore: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {loading && images.length === 0
                 ? Array.from({ length: 8 }).map((_, index) => (
-                    <ImageSkeleton key={index} />
+                    <ImageSkeleton key={index} /> // Use the custom ImageSkeleton component
                   ))
                 : images.map((image) => (
                     <Card
                       key={image.ipfsHash}
                       className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                      onClick={() => handleImageClick(image.url)} // Add onClick to open popup
                     >
                       <div className="relative aspect-square">
-                        <img
+                        <Image
                           src={image.url}
                           alt={image.prompt}
-                          className="w-full h-full object-cover"
+                          layout="fill" // Use layout fill for responsive images
+                          objectFit="cover" // Maintain aspect ratio
                           loading="lazy"
                         />
                         <div className="absolute top-2 right-2 flex space-x-2">
@@ -153,7 +167,10 @@ const Explore: React.FC = () => {
                                 <Button
                                   variant="secondary"
                                   size="icon"
-                                  onClick={() => handleLove(image)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent popup from opening
+                                    handleLove(image);
+                                  }}
                                   className={`rounded-full ${
                                     lovedImages.includes(image.ipfsHash)
                                       ? "bg-blue-500 text-white hover:bg-blue-600"
@@ -178,12 +195,13 @@ const Explore: React.FC = () => {
                                 <Button
                                   variant="secondary"
                                   size="icon"
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent popup from opening
                                     handleDownload(
                                       image.url,
                                       `image-${image.ipfsHash}.jpg`
-                                    )
-                                  }
+                                    );
+                                  }}
                                   className="rounded-full bg-gray-200 text-gray-800 hover:bg-blue-500"
                                 >
                                   <DownloadIcon size={20} />
@@ -244,6 +262,14 @@ const Explore: React.FC = () => {
             <div className="text-center text-white mt-4">
               Showing {images.length} of {totalCount} images
             </div>
+            {/* Use the ImagePopup component */}
+            <ImagePopup
+              selectedImage={selectedImage}
+              lovedImages={lovedImages}
+              onClose={closePopup}
+              onLove={handleLove}
+              onDownload={handleDownload}
+            />
           </>
         )}
       </div>

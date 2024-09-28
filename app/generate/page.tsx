@@ -4,6 +4,8 @@ import { Search, ChevronDown, DownloadIcon, AlertCircle } from "lucide-react";
 import AppNavbar from "@/components/AppNavbar";
 import BlurFade from "@/components/magicui/blur-fade";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Image from "next/image"; // Import the Image component from next/image
+import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
 
 interface ModelOption {
   value: string;
@@ -24,6 +26,8 @@ const ImageGenerationInterface: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [lovedImages, setLovedImages] = useState<string[]>([]);
 
   const modelOptions: ModelOption[] = [
     { value: "playground-v2.5", label: "SolidART-v2.0" },
@@ -130,6 +134,29 @@ const ImageGenerationInterface: React.FC = () => {
     if (e.key === "Enter") {
       handleGenerate();
     }
+  };
+
+  const handleLove = (image: {
+    ipfsHash: string;
+    url: string;
+    prompt: string;
+    timestamp: string;
+  }) => {
+    setLovedImages((prev) => {
+      if (prev.includes(image.url)) {
+        return prev.filter((img) => img !== image.url);
+      } else {
+        return [...prev, image.url];
+      }
+    });
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedImage(null);
   };
 
   return (
@@ -251,17 +278,21 @@ const ImageGenerationInterface: React.FC = () => {
             {history.map((item, idx) => (
               <BlurFade key={item.id} delay={0.25 + idx * 0.05}>
                 <div className="relative group bg-gray-800 rounded-lg overflow-hidden">
-                  <img
-                    className="w-full h-64 sm:h-72 md:h-80 object-cover"
+                  <Image
+                    className="w-full h-64 sm:h-72 md:h-80 object-cover cursor-pointer"
                     src={item.imageUrl}
                     alt={item.prompt}
                     loading="lazy"
+                    width={500}
+                    height={500}
+                    onClick={() => handleImageClick(item.imageUrl)} // Handle image click
                   />
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
-                      onClick={() =>
-                        handleDownload(item.imageUrl, `image-${item.id}.jpg`)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent popup from opening
+                        handleDownload(item.imageUrl, `image-${item.id}.jpg`);
+                      }}
                       className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-150 ease-in-out"
                     >
                       <DownloadIcon size={24} />
@@ -281,6 +312,15 @@ const ImageGenerationInterface: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Popup */}
+      <ImagePopup
+        selectedImage={selectedImage}
+        lovedImages={lovedImages}
+        onClose={handleClosePopup}
+        onLove={handleLove}
+        onDownload={handleDownload}
+      />
     </div>
   );
 };

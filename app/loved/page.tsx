@@ -10,7 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Import the existing Skeleton component
+import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
+import Image from "next/image"; // Import the Image component from next/image
 
 interface Image {
   ipfsHash: string;
@@ -24,6 +26,7 @@ const LovedImages: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State for the selected image
 
   useEffect(() => {
     const fetchLovedImages = () => {
@@ -55,9 +58,14 @@ const LovedImages: React.FC = () => {
     };
   }, []);
 
-  const handleUnlove = (ipfsHash: string) => {
+  const handleUnlove = (image: {
+    ipfsHash: string;
+    url: string;
+    prompt: string;
+    timestamp: string;
+  }) => {
     const updatedLovedImages = lovedImages.filter(
-      (img) => img.ipfsHash !== ipfsHash
+      (img) => img.ipfsHash !== image.ipfsHash
     );
     setLovedImages(updatedLovedImages);
 
@@ -99,6 +107,10 @@ const LovedImages: React.FC = () => {
     </Card>
   );
 
+  const closePopup = () => {
+    setSelectedImage(null); // Close the popup
+  };
+
   return (
     <section id="loved-photos" className="bg-gray-900 min-h-screen">
       <AppNavbar />
@@ -118,19 +130,21 @@ const LovedImages: React.FC = () => {
               ))
             ) : lovedImages.length === 0 ? (
               <div className="col-span-full text-center text-white text-xl">
-                You havent loved any images yet.
+                You haven&apos;t loved any images yet.
               </div>
             ) : (
               lovedImages.map((image) => (
                 <Card
                   key={image.ipfsHash}
                   className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                  onClick={() => setSelectedImage(image.url)} // Open popup on click
                 >
                   <div className="relative aspect-square">
-                    <img
+                    <Image
                       src={image.url}
                       alt={image.prompt}
-                      className="w-full h-full object-cover"
+                      layout="fill" // Use layout fill for responsive images
+                      objectFit="cover" // Maintain aspect ratio
                       loading="lazy"
                     />
                     <div className="absolute top-2 right-2 flex space-x-2">
@@ -140,7 +154,10 @@ const LovedImages: React.FC = () => {
                             <Button
                               variant="secondary"
                               size="icon"
-                              onClick={() => handleUnlove(image.ipfsHash)}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent popup from opening
+                                handleUnlove(image); // Pass the entire image object
+                              }}
                               className="rounded-full bg-blue-500 text-white"
                             >
                               <HeartIcon size={20} />
@@ -157,12 +174,13 @@ const LovedImages: React.FC = () => {
                             <Button
                               variant="secondary"
                               size="icon"
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent popup from opening
                                 handleDownload(
                                   image.url,
                                   `image-${image.ipfsHash}.jpg`
-                                )
-                              }
+                                );
+                              }}
                               className="rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300"
                             >
                               <DownloadIcon size={20} />
@@ -216,6 +234,14 @@ const LovedImages: React.FC = () => {
           </div>
         )}
       </div>
+      {/* Use the ImagePopup component */}
+      <ImagePopup
+        selectedImage={selectedImage}
+        lovedImages={lovedImages.map((img) => img.ipfsHash)} // Pass loved image hashes
+        onClose={closePopup}
+        onLove={handleUnlove} // This is now correct
+        onDownload={handleDownload}
+      />
     </section>
   );
 };
