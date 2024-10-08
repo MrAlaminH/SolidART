@@ -1,10 +1,17 @@
 "use client";
 import React from "react";
 import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react"; // Updated import
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
+import dynamic from "next/dynamic";
+
+const CreditScale = dynamic(() => import("./Credit-scale"), {
+  ssr: false,
+  loading: () => <div>Loading...</div>,
+});
+
 import {
   User,
   Settings,
@@ -12,6 +19,7 @@ import {
   Telescope,
   Heart,
   ImageIcon,
+  Zap,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,8 +42,11 @@ const Navbar = () => {
   }
 
   const handleSignOut = async () => {
-    // Use the signOut function from next-auth/react
-    await signOut({ callbackUrl: "/" });
+    try {
+      await signOut({ callbackUrl: "/" });
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
@@ -46,7 +57,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link
-                href="/"
+                href="/explore"
                 className="text-white font-bold text-xl flex items-center"
               >
                 SolidART.
@@ -72,6 +83,12 @@ const Navbar = () => {
                 >
                   <ImageIcon className="w-5 h-5 mr-2" /> Generate
                 </Link>
+                <Link
+                  href="/pricing"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center"
+                >
+                  <Zap className="w-5 h-5 mr-2" /> Update Plan
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -94,6 +111,7 @@ const Navbar = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                  {typeof window !== "undefined" && <CreditScale />}
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="flex items-center">
                       <Settings className="w-5 h-5 mr-2" /> Settings

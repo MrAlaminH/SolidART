@@ -7,9 +7,8 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-if (!process.env.AUTH_GOOGLE_ID || !process.env.AUTH_GOOGLE_SECRET) {
-  throw new Error("Google OAuth environment variables are missing.");
-}
+const googleId = process.env.AUTH_GOOGLE_ID;
+const googleSecret = process.env.AUTH_GOOGLE_SECRET;
 
 export const {
   handlers: { GET, POST },
@@ -19,10 +18,14 @@ export const {
 } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    ...(googleId && googleSecret
+      ? [
+          GoogleProvider({
+            clientId: googleId,
+            clientSecret: googleSecret,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: "Credentials",
       credentials: {

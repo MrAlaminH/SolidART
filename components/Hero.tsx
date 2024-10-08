@@ -1,158 +1,75 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import BlurFade from "@/components/magicui/blur-fade";
+import { useState } from "react";
+import { Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-const ShuffleHero = () => {
-  return (
-    <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
-      <div>
-        <BlurFade delay={0.25} inView>
-          <span className="block mb-4 text-xs md:text-sm text-indigo-500 font-medium">
-            The Future Genarating
-          </span>
-          <h3 className="text-4xl md:text-6xl font-semibold">
-            Generate Your Dream Now
-          </h3>
-        </BlurFade>
-        <BlurFade delay={0.25 * 2} inView>
-          <p className="text-base md:text-lg text-slate-100 my-4 md:my-6">
-            Stop creating, Start generating using Solid AI. SolidArt is a
-            cutting-edge application that harnesses the power of artificial
-            intelligence to revolutionize image creation. With SolidArt, you can
-            unleash your creativity like never before, generating stunning
-            visuals with just a few clicks.
-          </p>
-        </BlurFade>
-      </div>
-      <ShuffleGrid />
-    </section>
-  );
-};
+export default function Hero() {
+  const router = useRouter();
+  const [idea, setIdea] = useState("");
 
-const shuffle = (array: (typeof squareData)[0][]) => {
-  let currentIndex = array.length,
-    randomIndex;
-
-  while (currentIndex != 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-
-  return array;
-};
-
-const squareData = [
-  {
-    id: 1,
-    src: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-    id: 2,
-    src: "https://images.unsplash.com/photo-1510925758641-869d353cecc7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-  },
-  {
-    id: 3,
-    src: "https://images.unsplash.com/photo-1629901925121-8a141c2a42f4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1580238053495-b9720401fd45?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-  },
-  {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1569074187119-c87815b476da?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1325&q=80",
-  },
-  {
-    id: 6,
-    src: "https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-    id: 7,
-    src: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-    id: 8,
-    src: "https://plus.unsplash.com/premium_photo-1671436824833-91c0741e89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-    id: 9,
-    src: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-    id: 10,
-    src: "https://images.unsplash.com/photo-1610768764270-790fbec18178?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-  },
-  {
-    id: 11,
-    src: "https://images.unsplash.com/photo-1507034589631-9433cc6bc453?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=684&q=80",
-  },
-  {
-    id: 12,
-    src: "https://images.unsplash.com/photo-1533107862482-0e6974b06ec4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=882&q=80",
-  },
-  {
-    id: 13,
-    src: "https://images.unsplash.com/photo-1560089000-7433a4ebbd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-  },
-  {
-    id: 14,
-    src: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80",
-  },
-  {
-    id: 15,
-    src: "https://images.unsplash.com/photo-1606244864456-8bee63fce472?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=681&q=80",
-  },
-  {
-    id: 16,
-    src: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1820&q=80",
-  },
-];
-
-const generateSquares = () => {
-  return shuffle(squareData).map((sq) => (
-    <motion.div
-      key={sq.id}
-      layout
-      transition={{ duration: 1.5, type: "spring" }}
-      className="w-full h-full"
-      style={{
-        backgroundImage: `url(${sq.src})`,
-        backgroundSize: "cover",
-      }}
-    ></motion.div>
-  ));
-};
-
-const ShuffleGrid = () => {
-  const timeoutRef = useRef<any>(null);
-  const [squares, setSquares] = useState(generateSquares());
-
-  useEffect(() => {
-    shuffleSquares();
-
-    return () => clearTimeout(timeoutRef.current);
-  }, []);
-
-  const shuffleSquares = () => {
-    setSquares(generateSquares());
-
-    timeoutRef.current = setTimeout(shuffleSquares, 3000);
+  const handleGenerate = () => {
+    router.push("/auth/register");
   };
 
   return (
-    <BlurFade delay={0.25 * 2} inView>
-      <div className="grid grid-cols-4 grid-rows-4 h-[450px] gap-1">
-        {squares.map((sq) => sq)}
+    <div className="min-h-screen bg-transparent text-white flex flex-col items-center justify-center p-4">
+      <div className="max-w-4xl mx-auto text-center space-y-10">
+        <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+          Unlock <span className="text-fuchsia-500">Creativity</span> with
+          <br />
+          <span className="text-fuchsia-500">AI-Powered</span> Image Generate
+        </h1>
+        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          Revolutionize your design process with our AI image generator. Say
+          goodbye to stock photos and hello to endless possibilities.
+        </p>
+        <div className="flex w-full max-w-md mx-auto">
+          <input
+            type="text"
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+            placeholder="Enter your idea"
+            className="flex-grow px-6 py-3 rounded-l-full bg-gray-900 border-2 border-gray-700 focus:outline-none focus:border-fuchsia-500 text-lg"
+          />
+          <button
+            onClick={handleGenerate}
+            className="px-8 py-3 bg-fuchsia-600 rounded-r-full font-medium flex items-center hover:bg-fuchsia-700 transition-colors text-lg"
+          >
+            <Sparkles className="mr-2" size={24} />
+            Generate
+          </button>
+        </div>
       </div>
-    </BlurFade>
+      <div className="mt-20 flex justify-center items-end space-x-6">
+        <div className="w-48 h-56 bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+          <Image
+            src="/demo3.png"
+            alt="AI generated image 1"
+            width={192}
+            height={224}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="w-56 h-64 bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+          <Image
+            src="/demo2.png"
+            alt="AI generated image 2"
+            width={224}
+            height={256}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="w-48 h-56 bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+          <Image
+            src="/demo1.png"
+            alt="AI generated image 3"
+            width={192}
+            height={224}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default ShuffleHero;
+}

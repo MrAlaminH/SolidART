@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export function Demo() {
   return (
@@ -10,23 +11,16 @@ export function Demo() {
               AI Image Generation
             </h1>
           </div>
-          <div className="text-center md:text-right">
-            <p className="mb-4">
-              Simply describe your prompt, and get images generated for you{" "}
-              <br />
-              in a matter of seconds!
-            </p>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full">
-              Try It Out
-            </Button>
-          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="relative">
-            <img
+            <Image
               src="/demo1.png"
               alt="Generated Image"
               className="rounded-lg w-full h-auto"
+              layout="responsive" // Add layout prop for responsiveness
+              width={500} // Specify width
+              height={300} // Specify height
             />
           </div>
           <div className="flex flex-col justify-between ">
@@ -45,49 +39,73 @@ export function Demo() {
                 </p>
               </div>
               <Button variant="outline" className="w-full">
-                <a href="/explore">Generate more</a>
+                <a href="/auth/register">Generate more</a>
               </Button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <img
+              <Image
                 src="/demo2.png"
                 alt="Generated Image 1"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo3.png"
                 alt="Generated Image 2"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo4.jpg"
                 alt="Generated Image 3"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo5.jpg"
                 alt="Generated Image 3"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo6.png"
                 alt="Generated Image 1"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo7.png"
                 alt="Generated Image 2"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo8.png"
                 alt="Generated Image 3"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
-              <img
+              <Image
                 src="/demo9.jpg"
                 alt="Generated Image 3"
                 className="rounded-lg w-full h-auto"
+                layout="responsive"
+                width={500}
+                height={300}
               />
             </div>
           </div>

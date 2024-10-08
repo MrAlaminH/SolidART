@@ -6,6 +6,7 @@ import BlurFade from "@/components/magicui/blur-fade";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Image from "next/image"; // Import the Image component from next/image
 import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
+import UpgradePro from "@/components/UpgradePro";
 
 interface ModelOption {
   value: string;
@@ -28,6 +29,7 @@ const ImageGenerationInterface: React.FC = () => {
   const [progress, setProgress] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lovedImages, setLovedImages] = useState<string[]>([]);
+  const [showUpgradePro, setShowUpgradePro] = useState<boolean>(false);
 
   const modelOptions: ModelOption[] = [
     { value: "playground-v2.5", label: "SolidART-v2.0" },
@@ -75,16 +77,15 @@ const ImageGenerationInterface: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage: string;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage =
-            errorJson.error || `HTTP error! status: ${response.status}`;
-        } catch (parseError) {
-          errorMessage = `HTTP error! status: ${response.status}. Response: ${errorText}`;
+        const errorData = await response.json();
+        if (errorData.upgradeRequired) {
+          setShowUpgradePro(true);
+        } else {
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
         }
-        throw new Error(errorMessage);
+        return;
       }
 
       const data = await response.json();
@@ -311,6 +312,10 @@ const ImageGenerationInterface: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {showUpgradePro && (
+          <UpgradePro onClose={() => setShowUpgradePro(false)} />
+        )}
       </div>
 
       {/* Image Popup */}
