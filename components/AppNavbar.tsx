@@ -6,10 +6,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
 
+// Dynamically load CreditScale with a fallback skeleton while loading
 const CreditScale = dynamic(() => import("./Credit-scale"), {
   ssr: false,
-  loading: () => <div>Loading...</div>,
+  loading: () => (
+    <div className="w-64 p-4 bg-black text-white">
+      <Skeleton className="h-4 w-1/2 mb-2" />
+      <Skeleton className="h-4 w-1/3 mb-4" />
+      <Skeleton className="h-2 w-full mb-4 rounded-full" />
+      <Skeleton className="h-8 w-full" />
+    </div>
+  ),
 });
 
 import {
@@ -111,7 +120,8 @@ const Navbar = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {typeof window !== "undefined" && <CreditScale />}
+                  {/* Render CreditScale with cached data */}
+                  <CreditScale />
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="flex items-center">
                       <Settings className="w-5 h-5 mr-2" /> Settings
@@ -156,6 +166,13 @@ const Navbar = () => {
             <ImageIcon className="w-6 h-6" />
             <span className="text-xs mt-1">Generate</span>
           </Link>
+          <Link
+            href="/pricing"
+            className="text-gray-300 hover:text-white flex flex-col items-center"
+          >
+            <Zap className="w-6 h-6" />
+            <span className="text-xs mt-1">Update Plan</span>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="text-gray-300 hover:text-white flex flex-col items-center">
@@ -164,6 +181,8 @@ const Navbar = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              {/* Render CreditScale in mobile nav */}
+              <CreditScale />
               <DropdownMenuItem asChild>
                 <Link href="/settings" className="flex items-center">
                   <Settings className="w-5 h-5 mr-2" /> Settings

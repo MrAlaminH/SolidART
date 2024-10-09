@@ -27,7 +27,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppNavbar from "@/components/AppNavbar";
-import Spinner from "@/components/ui/spinner"; // Assuming you have a spinner component
+import Spinner from "@/components/ui/spinner";
 import { MapPinIcon, UserIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 
@@ -51,9 +51,9 @@ const ProfilePage: React.FC = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: profileData?.name || "", // Update to use fetched profile data
-      bio: profileData?.bio || "",
-      location: profileData?.location || "",
+      name: "",
+      bio: "",
+      location: "",
     },
   });
 
@@ -63,11 +63,24 @@ const ProfilePage: React.FC = () => {
 
     const fetchProfile = async () => {
       try {
+        // Check local storage first
+        const storedProfile = localStorage.getItem("profileData");
+        if (storedProfile) {
+          const parsedProfile = JSON.parse(storedProfile);
+          setProfileData(parsedProfile);
+          form.reset(parsedProfile);
+          setIsLoading(false);
+          return;
+        }
+
+        // If not in local storage, fetch from API
         const response = await fetch("/api/profile");
         if (response.ok) {
           const data = await response.json();
           setProfileData(data);
           form.reset(data);
+          // Store in local storage
+          localStorage.setItem("profileData", JSON.stringify(data));
         } else {
           throw new Error("Failed to fetch profile data");
         }
@@ -107,6 +120,10 @@ const ProfilePage: React.FC = () => {
         const updatedProfile = await response.json(); // Get the updated profile data
         setProfileData(updatedProfile); // Update the profileData state with the new data
         form.reset(updatedProfile); // Reset the form with the updated profile data
+
+        // Update local storage with the new profile data
+        localStorage.setItem("profileData", JSON.stringify(updatedProfile));
+
         toast({
           title: "Success",
           description: "Your profile has been updated.",
@@ -258,27 +275,31 @@ const ProfilePage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-sm">{profileData?.bio || "Add bio"}</p>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <MapPinIcon size={16} />
-              <span>{profileData?.location || "Add location"}</span>
-            </div>
+            <p className="text-sm">{profileData?.bio || "No bio yet."}</p>
+            <p className="text-sm flex items-center space-x-1">
+              <MapPinIcon className="h-4 w-4 text-gray-500" />
+              <span>{profileData?.location || "No location specified."}</span>
+            </p>
           </div>
         </CardContent>
       </Card>
-
+      {/* Confirmation Dialog */}
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Confirm Changes</DialogTitle>
           </DialogHeader>
           <p>Are you sure you want to save these changes?</p>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setShowConfirm(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleConfirmSubmit}>Confirm</Button>
-          </div>
+          <Button onClick={handleConfirmSubmit} className="mt-4">
+            Confirm
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowConfirm(false)}
+            className="mt-2"
+          >
+            Cancel
+          </Button>
         </DialogContent>
       </Dialog>
     </>
