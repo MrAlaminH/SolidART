@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { DownloadIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
+import {
+  DownloadIcon,
+  XIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+  CopyIcon,
+  CheckIcon,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -12,7 +19,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ImagePopupProps {
-  selectedImage: string | null;
+  selectedImage: { url: string; prompt: string };
   onClose: () => void;
   onDownload: (url: string, filename: string) => void;
 }
@@ -24,6 +31,7 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
 }) => {
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleZoomIn = useCallback(
     () => setScale((prev) => Math.min(prev + 0.1, 3)),
@@ -38,6 +46,15 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
     e.preventDefault();
     setScale((prev) => Math.max(0.5, Math.min(3, prev - e.deltaY * 0.001)));
   }, []);
+
+  const copyToClipboard = useCallback(() => {
+    if (selectedImage?.prompt) {
+      navigator.clipboard.writeText(selectedImage.prompt).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      });
+    }
+  }, [selectedImage]);
 
   if (!selectedImage) return null;
 
@@ -73,7 +90,7 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
               style={{ scale }}
             >
               <Image
-                src={selectedImage}
+                src={selectedImage.url}
                 alt="Selected"
                 className="w-full h-auto object-contain"
                 width={1000}
@@ -88,7 +105,7 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
                 <TooltipTrigger asChild>
                   <button
                     onClick={() =>
-                      onDownload(selectedImage, `downloaded-image.jpg`)
+                      onDownload(selectedImage.url, `downloaded-image.jpg`)
                     }
                     className="rounded-full bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white p-2 transition-colors duration-200"
                   >
@@ -127,6 +144,25 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Zoom Out</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={copyToClipboard}
+                    className="rounded-full bg-gray-200 text-gray-800 hover:bg-green-500 hover:text-white p-2 transition-colors duration-200"
+                  >
+                    {isCopied ? (
+                      <CheckIcon size={20} />
+                    ) : (
+                      <CopyIcon size={20} />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{isCopied ? "Copied!" : "Copy Prompt"}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

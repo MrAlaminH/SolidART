@@ -27,7 +27,10 @@ const ImageGenerationInterface: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string;
+    prompt: string;
+  } | null>(null);
   const [showUpgradePro, setShowUpgradePro] = useState<boolean>(false);
 
   const modelOptions: ModelOption[] = [
@@ -136,8 +139,8 @@ const ImageGenerationInterface: React.FC = () => {
     }
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
+  const handleImageClick = (imageUrl: string, prompt: string) => {
+    setSelectedImage({ url: imageUrl, prompt: prompt });
   };
 
   const handleClosePopup = () => {
@@ -245,7 +248,7 @@ const ImageGenerationInterface: React.FC = () => {
                     timestamp: item.timestamp.toISOString(),
                   }}
                   onDownload={(url, filename) => handleDownload(url, filename)}
-                  onClick={() => handleImageClick(item.imageUrl)}
+                  onClick={() => handleImageClick(item.imageUrl, item.prompt)}
                 />
               </BlurFade>
             ))}
@@ -258,11 +261,13 @@ const ImageGenerationInterface: React.FC = () => {
       </div>
 
       {/* Image Popup */}
-      <ImagePopup
-        selectedImage={selectedImage}
-        onClose={handleClosePopup}
-        onDownload={handleDownload}
-      />
+      {selectedImage && (
+        <ImagePopup
+          selectedImage={selectedImage}
+          onClose={handleClosePopup}
+          onDownload={handleDownload}
+        />
+      )}
     </div>
   );
 };

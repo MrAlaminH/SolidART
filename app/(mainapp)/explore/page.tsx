@@ -27,7 +27,10 @@ const Explore: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State for the selected image
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string;
+    prompt: string;
+  } | null>(null); // State for the selected image
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -95,8 +98,8 @@ const Explore: React.FC = () => {
     }
   };
 
-  const handleImageClick = (url: string) => {
-    setSelectedImage(url); // Set the selected image when an image card is clicked
+  const handleImageClick = (image: ImageObject) => {
+    setSelectedImage({ url: image.url, prompt: image.prompt });
   };
 
   const handleClosePopup = () => {
@@ -128,9 +131,9 @@ const Explore: React.FC = () => {
       <AppNavbar />
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <motion.h1
-          initial={{ opacity: 0, y: -50 }} // Start with opacity 0 and translateY -50px (from the top)
-          animate={{ opacity: 1, y: 0 }} // Animate to opacity 1 and translateY 0px
-          transition={{ duration: 0.8, ease: "easeOut" }} // Smooth and simple transition
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-white text-3xl font-bold mb-8 mt-8 text-center"
         >
           Explore Others People Generated Image
@@ -143,7 +146,7 @@ const Explore: React.FC = () => {
                   key={image.key}
                   image={image}
                   onDownload={handleDownload}
-                  onClick={() => handleImageClick(image.url)} // Pass the click handler
+                  onClick={() => handleImageClick(image)}
                   ref={index === images.length - 1 ? lastImageElementRef : null} // Pass ref only to the last image
                 />
               ))}
@@ -155,11 +158,11 @@ const Explore: React.FC = () => {
         )}
         {!hasMore && !loading && (
           <div className="flex justify-center items-center mt-8 mb-8">
-            <p className="text-white">No more images to load</p>
+            <p className="text-white">No more images Left to load</p>
           </div>
         )}
       </div>
-      {selectedImage && ( // Render the ImagePopup if an image is selected
+      {selectedImage && (
         <ImagePopup
           selectedImage={selectedImage}
           onClose={handleClosePopup}
