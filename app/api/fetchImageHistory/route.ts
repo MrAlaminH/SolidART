@@ -95,7 +95,8 @@ export async function GET(request: NextRequest) {
 }
 
 // Upload new images with metadata
-export async function uploadImageToR2(imageBuffer: Buffer, prompt: string) {
+// Move this function outside of the exported API route handlers
+async function uploadImageToR2(imageBuffer: Buffer, prompt: string) {
   const bucketName = process.env.R2_BUCKET_NAME!;
   const fileName = `${uuidv4()}.png`;
 
@@ -121,3 +122,7 @@ export async function uploadImageToR2(imageBuffer: Buffer, prompt: string) {
     throw new Error('Failed to upload image to storage');
   }
 }
+
+// If you need to export uploadImageToR2 for use in other files, 
+// you can do so like this:
+export { uploadImageToR2 };
