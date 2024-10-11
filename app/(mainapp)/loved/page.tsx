@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton"; // Import the existing Skeleton component
-import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
 import Image from "next/image"; // Import the Image component from next/image
 import { motion } from "framer-motion";
 
@@ -27,7 +26,6 @@ const LovedImages: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State for the selected image
 
   useEffect(() => {
     const fetchLovedImages = () => {
@@ -108,10 +106,6 @@ const LovedImages: React.FC = () => {
     </Card>
   );
 
-  const closePopup = () => {
-    setSelectedImage(null); // Close the popup
-  };
-
   return (
     <section id="loved-photos" className="bg-gray-900 min-h-screen">
       <AppNavbar />
@@ -148,7 +142,6 @@ const LovedImages: React.FC = () => {
                 <Card
                   key={image.ipfsHash}
                   className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                  onClick={() => setSelectedImage(image.url)} // Open popup on click
                 >
                   <div className="relative aspect-square">
                     <Image
@@ -245,14 +238,6 @@ const LovedImages: React.FC = () => {
           </div>
         )}
       </div>
-      {/* Use the ImagePopup component */}
-      <ImagePopup
-        selectedImage={selectedImage}
-        lovedImages={lovedImages.map((img) => img.ipfsHash)} // Pass loved image hashes
-        onClose={closePopup}
-        onLove={handleUnlove} // This is now correct
-        onDownload={handleDownload}
-      />
     </section>
   );
 };
