@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Search, ChevronDown, DownloadIcon, AlertCircle } from "lucide-react";
+import { Search, ChevronDown, AlertCircle, Sparkles } from "lucide-react";
 import AppNavbar from "@/components/AppNavbar";
 import BlurFade from "@/components/magicui/blur-fade";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Image from "next/image";
 import ImagePopup from "@/components/ImagePopup";
 import UpgradePro from "@/components/UpgradePro";
+import ImageCard from "@/components/explore/ImageCard";
 
 interface ModelOption {
   value: string;
@@ -28,7 +28,6 @@ const ImageGenerationInterface: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [lovedImages, setLovedImages] = useState<string[]>([]);
   const [showUpgradePro, setShowUpgradePro] = useState<boolean>(false);
 
   const modelOptions: ModelOption[] = [
@@ -137,21 +136,6 @@ const ImageGenerationInterface: React.FC = () => {
     }
   };
 
-  const handleLove = (image: {
-    ipfsHash: string;
-    url: string;
-    prompt: string;
-    timestamp: string;
-  }) => {
-    setLovedImages((prev) => {
-      if (prev.includes(image.url)) {
-        return prev.filter((img) => img !== image.url);
-      } else {
-        return [...prev, image.url];
-      }
-    });
-  };
-
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
   };
@@ -165,8 +149,8 @@ const ImageGenerationInterface: React.FC = () => {
       <AppNavbar />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-            SolidART.
+          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4 mt-14 md:mt-8">
+            SolidART<span className="text-blue-500">.</span>
           </h1>
           <div className="bg-gray-800 text-blue-400 px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm mb-6 inline-block">
             SolidART-2.0 is here!
@@ -214,26 +198,7 @@ const ImageGenerationInterface: React.FC = () => {
             >
               {isGenerating ? (
                 <div className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 0116 0H4z"
-                    />
-                  </svg>
+                  <Sparkles className="mr-2 h-4 w-4 animate-spin" />
                   Generating...
                 </div>
               ) : (
@@ -265,43 +230,23 @@ const ImageGenerationInterface: React.FC = () => {
         )}
 
         {/* History Section */}
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-white text-2xl font-bold mb-4">
+        <div className="max-w-6xl mx-auto mb-12">
+          <h2 className="text-white text-2xl font-bold mb-8">
             Your Generated Images 👇
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {history.map((item, idx) => (
               <BlurFade key={item.id} delay={0.25 + idx * 0.05}>
-                <div className="relative group bg-gray-800 rounded-lg overflow-hidden">
-                  <Image
-                    className="w-full h-64 sm:h-72 md:h-80 object-cover cursor-pointer"
-                    src={item.imageUrl}
-                    alt={item.prompt}
-                    loading="lazy"
-                    width={500}
-                    height={500}
-                    onClick={() => handleImageClick(item.imageUrl)} // Handle image click
-                  />
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent popup from opening
-                        handleDownload(item.imageUrl, `image-${item.id}.jpg`);
-                      }}
-                      className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-150 ease-in-out"
-                    >
-                      <DownloadIcon size={24} />
-                    </button>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-white text-sm truncate mb-1">
-                      {item.prompt}
-                    </p>
-                    <p className="text-gray-400 text-xs">
-                      {item.timestamp.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
+                <ImageCard
+                  image={{
+                    key: item.id,
+                    url: item.imageUrl,
+                    prompt: item.prompt,
+                    timestamp: item.timestamp.toISOString(),
+                  }}
+                  onDownload={(url, filename) => handleDownload(url, filename)}
+                  onClick={() => handleImageClick(item.imageUrl)}
+                />
               </BlurFade>
             ))}
           </div>
@@ -315,9 +260,7 @@ const ImageGenerationInterface: React.FC = () => {
       {/* Image Popup */}
       <ImagePopup
         selectedImage={selectedImage}
-        lovedImages={lovedImages}
         onClose={handleClosePopup}
-        onLove={handleLove}
         onDownload={handleDownload}
       />
     </div>

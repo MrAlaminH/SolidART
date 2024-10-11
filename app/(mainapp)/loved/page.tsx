@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"; // Import the existing Skeleton component
 import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
 import Image from "next/image"; // Import the Image component from next/image
+import { motion } from "framer-motion";
 
 interface Image {
   ipfsHash: string;
@@ -114,10 +115,15 @@ const LovedImages: React.FC = () => {
   return (
     <section id="loved-photos" className="bg-gray-900 min-h-screen">
       <AppNavbar />
-      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-white text-3xl font-bold mb-8 text-center">
+      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 mt-12 md:mt-4">
+        <motion.h1
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-white text-3xl font-bold mb-8 mt-8 text-center"
+        >
           Your Loved Images
-        </h1>
+        </motion.h1>
         {error ? (
           <div className="flex justify-center items-center h-64 text-red-500">
             Error: {error}
@@ -129,9 +135,14 @@ const LovedImages: React.FC = () => {
                 <ImageSkeleton key={index} />
               ))
             ) : lovedImages.length === 0 ? (
-              <div className="col-span-full text-center text-white text-xl">
+              <motion.div
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="col-span-full text-center text-white text-xl"
+              >
                 You haven&apos;t loved any images yet.
-              </div>
+              </motion.div>
             ) : (
               lovedImages.map((image) => (
                 <Card
