@@ -127,14 +127,14 @@ const Explore: React.FC = () => {
   }
 
   return (
-    <section className="bg-gray-900 min-h-screen">
+    <section className="bg-white-900 dark:bg-gray-900 min-h-screen">
       <AppNavbar />
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-white text-3xl font-bold mb-8 mt-8 text-center"
+          className="text-gray-900 dark:text-gray-100 text-3xl font-bold mb-8 mt-8 text-center"
         >
           Explore Others People Generated Image
         </motion.h1>

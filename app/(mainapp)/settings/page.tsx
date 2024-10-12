@@ -182,7 +182,7 @@ const ProfilePage: React.FC = () => {
   return (
     <>
       <AppNavbar />
-      <Card className="w-full max-w-4xl mx-auto mt-12">
+      <Card className="w-full max-w-4xl mx-auto mt-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
         <CardHeader className="flex flex-row justify-between items-start">
           <div className="flex items-center space-x-4">
             {session.user?.image ? (
@@ -192,7 +192,7 @@ const ProfilePage: React.FC = () => {
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 <UserIcon size={40} className="text-gray-400" />
               </div>
             )}
@@ -200,7 +200,7 @@ const ProfilePage: React.FC = () => {
               <h2 className="text-2xl font-bold">
                 {profileData?.name || "Add name"}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 @
                 {profileData?.name?.toLowerCase().replace(/\s+/g, "") ||
                   "username"}
@@ -213,7 +213,7 @@ const ProfilePage: React.FC = () => {
                 Edit profile
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
               <DialogHeader>
                 <DialogTitle>Edit profile</DialogTitle>
               </DialogHeader>
@@ -229,7 +229,11 @@ const ProfilePage: React.FC = () => {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your name" {...field} />
+                          <Input
+                            placeholder="Your name"
+                            {...field}
+                            className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -245,6 +249,7 @@ const ProfilePage: React.FC = () => {
                           <Textarea
                             placeholder="Tell us about yourself"
                             {...field}
+                            className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
                           />
                         </FormControl>
                         <FormDescription>Max 160 characters.</FormDescription>
@@ -259,7 +264,11 @@ const ProfilePage: React.FC = () => {
                       <FormItem>
                         <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your location" {...field} />
+                          <Input
+                            placeholder="Your location"
+                            {...field}
+                            className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -277,7 +286,7 @@ const ProfilePage: React.FC = () => {
           <div className="space-y-4">
             <p className="text-sm">{profileData?.bio || "No bio yet."}</p>
             <p className="text-sm flex items-center space-x-1">
-              <MapPinIcon className="h-4 w-4 text-gray-500" />
+              <MapPinIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
               <span>{profileData?.location || "No location specified."}</span>
             </p>
           </div>

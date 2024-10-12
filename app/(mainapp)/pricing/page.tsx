@@ -71,48 +71,50 @@ const plans = [
 
 export default function PricingTable() {
   return (
-    <div className="bg-gray-900 min-h-screen">
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
       <AppNavbar />
       <div className="container mx-auto px-4 py-16 mb-8">
-        <h1 className="text-4xl font-bold text-center text-white mb-12 mt-10 md:mt-6">
+        <h1 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-12 mt-10 md:mt-6">
           Choose Your Plan
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {plans.map((plan, index) => (
             <Card
               key={plan.name}
-              className={`bg-gray-800 border border-gray-700 rounded-lg shadow-lg transition-all hover:shadow-xl`}
+              className={`bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg transition-all hover:shadow-xl`}
             >
-              <CardHeader className="text-center pb-4">
+              <CardHeader className="text-center pb-4 ">
                 <CardTitle
                   className={`text-2xl font-bold bg-gradient-to-r ${plan.gradient} bg-clip-text text-transparent`}
                 >
                   {plan.name}
                 </CardTitle>
-                <p className="text-sm text-gray-400">{plan.description}</p>
+                <p className="text-sm text-gray-900 dark:text-gray-400">
+                  {plan.description}
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6">
+              <CardContent className="space-y-4 px-6 pb-6 text-gray-900 dark:text-gray-400">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                     {plan.price}
                   </span>
                   {plan.originalPrice && (
-                    <span className="ml-2 text-sm line-through text-gray-400">
+                    <span className="ml-2 text-sm line-through text-gray-900 dark:text-gray-400">
                       {plan.originalPrice}
                     </span>
                   )}
                   {plan.period && (
-                    <span className="ml-1 text-sm text-gray-400">
+                    <span className="ml-1 text-sm text-gray-900 dark:text-gray-400">
                       {plan.period}
                     </span>
                   )}
                 </div>
                 {plan.subtext && (
-                  <p className="text-xs text-gray-400 text-center">
+                  <p className="text-xs text-gray-900 dark:text-gray-400 text-center">
                     {plan.subtext}
                   </p>
                 )}
-                <ul className="space-y-2 mt-4">
+                <ul className="space-y-2 mt-4 text-gray-900 dark:text-gray-400">
                   <PlanFeature text={plan.credits} />
                   <PlanFeature text={plan.tasks} />
                   <PlanFeature
@@ -165,7 +167,7 @@ function PlanFeature({
       ) : (
         <X className="w-5 h-5 mr-2 text-red-500" />
       )}
-      <span className="text-sm text-white">{text}</span>
+      <span className="text-sm text-gray-900 dark:text-gray-400">{text}</span>
       {tooltip && (
         <TooltipProvider>
           <Tooltip>

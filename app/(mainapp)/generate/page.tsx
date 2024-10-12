@@ -148,11 +148,11 @@ const ImageGenerationInterface: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen">
+    <div className="bg-white-900 dark:bg-gray-900 min-h-screen">
       <AppNavbar />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4 mt-14 md:mt-8">
+          <h1 className="text-gray-900 dark:text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4 mt-14 md:mt-8">
             SolidART<span className="text-blue-500">.</span>
           </h1>
           <div className="bg-gray-800 text-blue-400 px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm mb-6 inline-block">
@@ -217,7 +217,7 @@ const ImageGenerationInterface: React.FC = () => {
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
-              <p className="text-center text-white text-sm">
+              <p className="text-center text-gray-900 dark:text-white text-sm">
                 {progress}% - Generating image...
               </p>
             </div>
@@ -226,15 +226,19 @@ const ImageGenerationInterface: React.FC = () => {
 
         {error && (
           <Alert variant="destructive" className="mb-4 max-w-2xl mx-auto">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertCircle className="h-4 w-4 text-gray-900 dark:text-white" />
+            <AlertTitle className="text-gray-900 dark:text-white">
+              Error
+            </AlertTitle>
+            <AlertDescription className="text-gray-900 dark:text-white">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
 
         {/* History Section */}
         <div className="max-w-6xl mx-auto mb-12">
-          <h2 className="text-white text-2xl font-bold mb-8">
+          <h2 className="text-gray-900 dark:text-white text-2xl font-bold mb-8">
             Your Generated Images 👇
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

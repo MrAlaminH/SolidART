@@ -18,11 +18,14 @@ const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <nav className="sticky top-0 z-50 bg-black/20 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 dark:bg-black/20 bg-white/20 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="text-white font-bold text-xl">
+            <Link
+              href="/"
+              className="text-gray-900 dark:text-gray-100 font-bold text-xl"
+            >
               SolidART.
             </Link>
           </div>

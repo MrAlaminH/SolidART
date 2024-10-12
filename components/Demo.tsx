@@ -7,8 +7,8 @@ export function Demo() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <div className="mb-6 md:mb-0">
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-              AI Image Generation
+            <h1 className="text-3xl md:text-4xl font-bold leading-tight text-gray-900 dark:text-white">
+              AI Generated Images
             </h1>
           </div>
         </div>
@@ -18,9 +18,9 @@ export function Demo() {
               src="/demo1.png"
               alt="Generated Image"
               className="rounded-lg w-full h-auto"
-              layout="responsive" // Add layout prop for responsiveness
-              width={500} // Specify width
-              height={300} // Specify height
+              layout="responsive"
+              width={500}
+              height={300}
             />
           </div>
           <div className="flex flex-col justify-between ">
@@ -38,7 +38,10 @@ export function Demo() {
                   guardian of nature and technology.
                 </p>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full text-gray-900 dark:text-white"
+              >
                 <a href="/auth/register">Generate more</a>
               </Button>
             </div>

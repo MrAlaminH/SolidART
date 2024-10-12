@@ -107,14 +107,17 @@ const LovedImages: React.FC = () => {
   );
 
   return (
-    <section id="loved-photos" className="bg-gray-900 min-h-screen">
+    <section
+      id="loved-photos"
+      className="bg-white dark:bg-gray-900 min-h-screen"
+    >
       <AppNavbar />
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 mt-12 md:mt-4">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-white text-3xl font-bold mb-8 mt-8 text-center"
+          className="text-gray-900 dark:text-white text-3xl font-bold mb-8 mt-8 text-center"
         >
           Your Loved Images
         </motion.h1>
@@ -133,7 +136,7 @@ const LovedImages: React.FC = () => {
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="col-span-full text-center text-white text-xl"
+                className="col-span-full text-center text-gray-900 dark:text-white text-xl"
               >
                 You haven&apos;t loved any images yet.
               </motion.div>
@@ -141,7 +144,7 @@ const LovedImages: React.FC = () => {
               lovedImages.map((image) => (
                 <Card
                   key={image.ipfsHash}
-                  className="bg-gray-800 text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                  className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="relative aspect-square">
                     <Image
@@ -185,7 +188,7 @@ const LovedImages: React.FC = () => {
                                   `image-${image.ipfsHash}.jpg`
                                 );
                               }}
-                              className="rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300"
+                              className="rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300"
                             >
                               <DownloadIcon size={20} />
                             </Button>
@@ -228,7 +231,7 @@ const LovedImages: React.FC = () => {
                         </Tooltip>
                       </TooltipProvider>
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {new Date(image.timestamp).toLocaleString()}
                     </p>
                   </CardContent>

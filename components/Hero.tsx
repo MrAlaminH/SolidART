@@ -74,7 +74,7 @@ export default function Hero() {
           🎉 Next Generation Tool
         </motion.p>
         <motion.h1
-          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight text-gray-900 dark:text-white"
           variants={itemVariants}
         >
           Unlock <span className="text-fuchsia-500">Creativity</span> with
@@ -82,7 +82,7 @@ export default function Hero() {
           <span className="text-fuchsia-500">AI-Powered</span> Image Generate
         </motion.h1>
         <motion.p
-          className="text-lg sm:text-xl text-gray-300 max-w-xl md:max-w-2xl mx-auto"
+          className="text-lg sm:text-xl text-gray-900 dark:text-gray-300 max-w-xl md:max-w-2xl mx-auto"
           variants={itemVariants}
         >
           Revolutionize your design process with our AI image generator. Say
