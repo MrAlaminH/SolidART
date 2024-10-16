@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React, { forwardRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton, ImageCardSkeleton } from "@/components/ui/skeleton"; // Import the Skeleton component
 
+// Interface definitions for the image object and component props
 interface ImageObject {
   key: string;
   url: string;
@@ -38,10 +40,12 @@ interface ImageCardProps {
 
 const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
   ({ image, onDownload, onClick }, ref) => {
+    // State management for copy functionality and device detection
     const [isCopied, setIsCopied] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
+    // Effect to detect mobile devices based on screen width
     useEffect(() => {
       const checkMobile = () => {
         setIsMobile(window.innerWidth <= 768);
@@ -51,6 +55,7 @@ const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
+    // Function to handle copying text to clipboard
     const copyToClipboard = (text: string) => {
       navigator.clipboard.writeText(text).then(() => {
         setIsCopied(true);
@@ -58,6 +63,7 @@ const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
       });
     };
 
+    // Component for action buttons (download and copy)
     const ActionButtons = () => (
       <>
         <TooltipProvider>
@@ -105,14 +111,18 @@ const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
       </>
     );
 
+    if (!image.url) {
+      return <ImageCardSkeleton />;
+    }
+
     return (
       <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
         <Card
           className="bg-gray-800 text-white overflow-hidden shadow-lg transition-all duration-300 cursor-pointer"
           ref={ref}
           onClick={onClick}
-          onMouseEnter={() => !isMobile && setIsHovered(true)}
-          onMouseLeave={() => !isMobile && setIsHovered(false)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           <div className="relative aspect-square overflow-hidden">
             <Image
@@ -123,33 +133,20 @@ const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
               style={{ objectFit: "cover" }}
               loading="lazy"
             />
-            <AnimatePresence>
-              {(isHovered || isMobile) && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+            {/* Permanent prompt overlay for both desktop and mobile */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
+              <div className="absolute bottom-2 left-2 right-2">
+                <h2
+                  className={`font-semibold truncate mb-1 text-white drop-shadow-md ${
+                    isMobile ? "text-sm" : "text-lg"
+                  }`}
                 >
-                  <div
-                    className={`absolute bottom-2 left-2 right-2 ${
-                      isMobile ? "text-xs" : ""
-                    }`}
-                  >
-                    <h2
-                      className={`font-semibold truncate mb-1 text-white drop-shadow-md ${
-                        isMobile ? "text-sm" : "text-lg"
-                      }`}
-                    >
-                      {image.prompt}
-                    </h2>
-                    <p className="text-gray-200 drop-shadow-md">
-                      {new Date(image.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {image.prompt}
+                </h2>
+              </div>
+            </div>
+
+            {/* Action buttons for desktop view */}
             <AnimatePresence>
               {isHovered && !isMobile && (
                 <motion.div
@@ -163,6 +160,8 @@ const ImageCard = forwardRef<HTMLDivElement, ImageCardProps>(
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Mobile dropdown menu */}
             {isMobile && (
               <div className="absolute top-2 right-2">
                 <DropdownMenu>

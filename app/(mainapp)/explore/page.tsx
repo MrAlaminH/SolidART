@@ -6,6 +6,7 @@ import ImageCard from "@/components/explore/ImageCard";
 import ImagePopup from "@/components/ImagePopup"; // Import the ImagePopup component
 import { Skeleton } from "@/components/ui/skeleton"; // Add this import
 import { motion } from "framer-motion";
+import { ImageCardSkeleton } from "@/components/ui/skeleton";
 
 interface ImageObject {
   key: string;
@@ -109,13 +110,7 @@ const Explore: React.FC = () => {
   const renderSkeletons = () => {
     return Array(8)
       .fill(0)
-      .map((_, index) => (
-        <div key={`skeleton-${index}`} className="flex flex-col space-y-3">
-          <Skeleton className="h-48 w-full rounded-lg" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-      ));
+      .map((_, index) => <ImageCardSkeleton key={`skeleton-${index}`} />);
   };
 
   if (error) {
@@ -136,7 +131,7 @@ const Explore: React.FC = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-gray-900 dark:text-gray-100 text-3xl font-bold mb-8 mt-8 text-center"
         >
-          Explore Others People Generated Image
+          Explore Other People&apos;s Generated Images
         </motion.h1>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {images.length === 0 && loading
@@ -147,7 +142,7 @@ const Explore: React.FC = () => {
                   image={image}
                   onDownload={handleDownload}
                   onClick={() => handleImageClick(image)}
-                  ref={index === images.length - 1 ? lastImageElementRef : null} // Pass ref only to the last image
+                  ref={index === images.length - 1 ? lastImageElementRef : null}
                 />
               ))}
         </div>
